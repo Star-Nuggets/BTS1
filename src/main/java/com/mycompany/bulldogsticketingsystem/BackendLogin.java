@@ -38,7 +38,8 @@ public class BackendLogin {
                 if (resultSet.next()) {
                     JOptionPane.showMessageDialog(null, "Welcome Student");
 
-                    // open STUDENT DASHBOARD FRAME
+                    String studentId = resultSet.getString("NU_ID");
+                    new StudentDashboard(studentId).setVisible(true);
                 } else {
                     JOptionPane.showMessageDialog(null, "Invalid Email or Password/ No Account Found");
                 }

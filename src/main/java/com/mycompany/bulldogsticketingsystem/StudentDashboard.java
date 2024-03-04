@@ -19,11 +19,13 @@ import java.time.LocalDateTime;
 public class StudentDashboard extends javax.swing.JFrame {
     byte[] proofOfPaymentContent;
     byte[] supportingDocumentContent;
+    String currentUser;
 
     /**
      * Creates new form StudentDashboard
      */
-    public StudentDashboard() {
+    public StudentDashboard(String currentUser) {
+        this.currentUser = currentUser; // Initialize the currentUser field in the constructor
         initComponents();
     }
 
@@ -457,7 +459,7 @@ public class StudentDashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        new ViewStudentTickets().setVisible(true);
+        new ViewStudentTickets(currentUser).setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton3ActionPerformed
 
@@ -486,7 +488,7 @@ public class StudentDashboard extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new StudentDashboard().setVisible(true);
+                new StudentDashboard("").setVisible(true);
             }
         });
     }

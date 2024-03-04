@@ -77,6 +77,11 @@ public class ViewStudentTickets extends javax.swing.JFrame {
         jPanel4.setBackground(new java.awt.Color(255, 255, 255));
         jPanel4.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 2, 0, new java.awt.Color(3, 40, 239)));
         jPanel4.setForeground(new java.awt.Color(50, 62, 143));
+        jPanel4.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jPanel4KeyPressed(evt);
+            }
+        });
 
         jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/ticket.png"))); // NOI18N
 
@@ -186,9 +191,9 @@ public class ViewStudentTickets extends javax.swing.JFrame {
             new Object [][] {
 
             },
-                new String[]{
-                        "Ticket Id", "Student Number", "First Name", "Middle Name", "Last Name", "Email", "Document Type", "No. of Copies", "Purpose", "Special Instruction", "Type of Payment", "Supporting Document", "Proof of Payment", "Date of Payment", "Total Amount Paid", "Comment", "Date", "Status"
-                }
+            new String [] {
+                "Ticket Id", "Student Number", "First Name", "MIddle Name", "Last Name", "Email", "Document Type", "No. of Copies", "Purpose", "Special Instruction", "Type of Payment", "Supporting Document", "Proof of Payment", "Total Amount Paid", "Comment", "Date", "Status"
+            }
         ) {
             boolean[] canEdit = new boolean [] {
                 false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false
@@ -300,8 +305,14 @@ public class ViewStudentTickets extends javax.swing.JFrame {
     }//GEN-LAST:event_viewStudentTicketsMouseClicked
 
     private void jPanel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel5MouseClicked
-        System.exit(0);
+        new Login().setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jPanel5MouseClicked
+
+    private void jPanel4KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jPanel4KeyPressed
+        new StudentDashboard(currentUser).setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jPanel4KeyPressed
 
     /**
      * @param args the command line arguments
@@ -367,7 +378,7 @@ public class ViewStudentTickets extends javax.swing.JFrame {
 
             String query = "SELECT * FROM ticketable WHERE student_Number = ?";
             PreparedStatement statement = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            statement.setString(1, this.currentUser);
+            statement.setString(1, currentUser);
             resultSet = statement.executeQuery();
 
             DefaultTableModel model = (DefaultTableModel) viewStudentTickets.getModel();

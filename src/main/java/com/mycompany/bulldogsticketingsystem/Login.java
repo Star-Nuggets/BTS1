@@ -41,8 +41,6 @@ public class Login extends javax.swing.JFrame {
         disable = new javax.swing.JLabel();
         show = new javax.swing.JLabel();
         LOGINBTN = new javax.swing.JButton();
-        jLabel10 = new javax.swing.JLabel();
-        jLabel11 = new javax.swing.JLabel();
         txtNUemail = new javax.swing.JTextField();
         txtPassword = new javax.swing.JPasswordField();
         jLabel2 = new javax.swing.JLabel();
@@ -126,10 +124,6 @@ public class Login extends javax.swing.JFrame {
             }
         });
 
-        jLabel10.setText("Create Account");
-
-        jLabel11.setText("Forgot Password?");
-
         txtNUemail.setForeground(new java.awt.Color(53, 64, 142));
         txtNUemail.setBorder(null);
         txtNUemail.addActionListener(new java.awt.event.ActionListener() {
@@ -170,11 +164,7 @@ public class Login extends javax.swing.JFrame {
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(show)
                             .addComponent(disable)))
-                    .addComponent(LOGINBTN, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel10)
-                        .addGap(124, 124, 124)
-                        .addComponent(jLabel11))))
+                    .addComponent(LOGINBTN, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -202,12 +192,7 @@ public class Login extends javax.swing.JFrame {
                         .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 6, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(38, 38, 38)
                 .addComponent(LOGINBTN, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(12, 12, 12)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel10)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(2, 2, 2)
-                        .addComponent(jLabel11))))
+                .addGap(74, 74, 74))
         );
 
         jPanel2.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(17, 37, -1, 380));
@@ -236,6 +221,7 @@ public class Login extends javax.swing.JFrame {
     private void LOGINBTNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LOGINBTNActionPerformed
         new BackendLogin(txtNUemail.getText(), txtPassword.getPassword());
         BackendLogin.dbconnectmethod();
+        this.dispose();
     }//GEN-LAST:event_LOGINBTNActionPerformed
 
     private void txtNUemailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNUemailActionPerformed
@@ -306,8 +292,6 @@ public class Login extends javax.swing.JFrame {
     private javax.swing.JButton LOGINBTN;
     private javax.swing.JLabel disable;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
