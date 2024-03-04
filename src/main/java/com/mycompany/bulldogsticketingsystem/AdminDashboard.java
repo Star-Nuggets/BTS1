@@ -6,6 +6,8 @@ package com.mycompany.bulldogsticketingsystem;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -23,8 +25,9 @@ public class AdminDashboard extends javax.swing.JFrame {
 
     public static final int SUPPORTING_DOCUMENT_INDEX = 11;
     public static final int PROOF_OF_PAYMENT_INDEX = 12;
-    public static final int ACTION_INDEX = 18;
     public static final int TICKET_STATUS_INDEX = 17;
+    public static final int TICKET_ID_INDEX = 0;
+
 
     ResultSet resultSet;
 
@@ -34,8 +37,36 @@ public class AdminDashboard extends javax.swing.JFrame {
     public AdminDashboard() {
         initComponents();
         this.setLocationRelativeTo(null);
-        adminTable.getColumnModel().getColumn(17).setCellRenderer(new TableActionCellRender());
 
+        DefaultTableModel model = (DefaultTableModel) adminTable.getModel();
+        model.addTableModelListener(ticketStatusChangedListener(model));
+
+        refreshTable();
+    }
+
+    private TableModelListener ticketStatusChangedListener(DefaultTableModel model) {
+        return e -> {
+            if (e.getType() == TableModelEvent.UPDATE) {
+                int row = e.getFirstRow();
+                int column = e.getColumn();
+                if (column == TICKET_STATUS_INDEX) { // Assuming the Status is in the 17th column (index 16)
+                    String newStatus = (String) model.getValueAt(row, column);
+                    if (newStatus.equals("Completed") || newStatus.equals("Rejected")) {
+                        int ticketId = (int) model.getValueAt(row, 0); // Assuming the Ticket Id is in the first column
+                        updateTicketStatusTo(ticketId, newStatus);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Invalid status. Please enter either 'Completed' or 'Rejected'.");
+                        // Reset the status to its previous value
+                        try {
+                            String oldStatus = resultSet.getString("ticket_Status");
+                            model.setValueAt(oldStatus, row, column);
+                        } catch (SQLException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+            }
+        };
     }
 
     /**
@@ -55,13 +86,18 @@ public class AdminDashboard extends javax.swing.JFrame {
         view_Completed_Task = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
+        view_Pending_Task = new javax.swing.JPanel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel17 = new javax.swing.JLabel();
         view_Deleted_Task = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
+        view_Refresh_Task = new javax.swing.JPanel();
+        jLabel18 = new javax.swing.JLabel();
+        jLabel19 = new javax.swing.JLabel();
         exit_AdminDashboard = new javax.swing.JPanel();
         LOGOUTLBL = new javax.swing.JLabel();
         LOGOUTLOGO = new javax.swing.JLabel();
-        REFRESH = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -78,7 +114,6 @@ public class AdminDashboard extends javax.swing.JFrame {
         jPanel11 = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
         jLabel16 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -113,6 +148,11 @@ public class AdminDashboard extends javax.swing.JFrame {
 
         view_Completed_Task.setBackground(new java.awt.Color(50, 62, 143));
         view_Completed_Task.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 2, 0, new java.awt.Color(255, 255, 255)));
+        view_Completed_Task.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                view_Completed_TaskMouseClicked(evt);
+            }
+        });
         view_Completed_Task.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -123,12 +163,52 @@ public class AdminDashboard extends javax.swing.JFrame {
         jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/check-mark.png"))); // NOI18N
         view_Completed_Task.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, -1));
 
+        view_Pending_Task.setBackground(new java.awt.Color(50, 62, 143));
+        view_Pending_Task.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 2, 0, new java.awt.Color(255, 255, 255)));
+        view_Pending_Task.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                view_Pending_TaskMouseClicked(evt);
+            }
+        });
+
+        jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel7.setText("Set as Pending");
+
+        jLabel17.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/data-processing.png"))); // NOI18N
+
+        javax.swing.GroupLayout view_Pending_TaskLayout = new javax.swing.GroupLayout(view_Pending_Task);
+        view_Pending_Task.setLayout(view_Pending_TaskLayout);
+        view_Pending_TaskLayout.setHorizontalGroup(
+            view_Pending_TaskLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, view_Pending_TaskLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel17)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        view_Pending_TaskLayout.setVerticalGroup(
+            view_Pending_TaskLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(view_Pending_TaskLayout.createSequentialGroup()
+                .addGap(15, 15, 15)
+                .addGroup(view_Pending_TaskLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel17))
+                .addContainerGap(17, Short.MAX_VALUE))
+        );
+
         view_Deleted_Task.setBackground(new java.awt.Color(50, 62, 143));
         view_Deleted_Task.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 2, 0, new java.awt.Color(255, 255, 255)));
+        view_Deleted_Task.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                view_Deleted_TaskMouseClicked(evt);
+            }
+        });
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel5.setText("Deleted Task");
+        jLabel5.setText("Reject Ticket");
 
         jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/bin.png"))); // NOI18N
 
@@ -153,6 +233,40 @@ public class AdminDashboard extends javax.swing.JFrame {
                 .addContainerGap(17, Short.MAX_VALUE))
         );
 
+        view_Refresh_Task.setBackground(new java.awt.Color(50, 62, 143));
+        view_Refresh_Task.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 2, 0, new java.awt.Color(255, 255, 255)));
+        view_Refresh_Task.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                view_Refresh_TaskMouseClicked(evt);
+            }
+        });
+
+        jLabel18.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel18.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel18.setText("Refresh");
+
+        jLabel19.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/refresh.png"))); // NOI18N
+
+        javax.swing.GroupLayout view_Refresh_TaskLayout = new javax.swing.GroupLayout(view_Refresh_Task);
+        view_Refresh_Task.setLayout(view_Refresh_TaskLayout);
+        view_Refresh_TaskLayout.setHorizontalGroup(
+            view_Refresh_TaskLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, view_Refresh_TaskLayout.createSequentialGroup()
+                .addContainerGap(10, Short.MAX_VALUE)
+                .addComponent(jLabel19)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        view_Refresh_TaskLayout.setVerticalGroup(
+            view_Refresh_TaskLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(view_Refresh_TaskLayout.createSequentialGroup()
+                .addGroup(view_Refresh_TaskLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel19)
+                    .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 12, Short.MAX_VALUE))
+        );
+
         exit_AdminDashboard.setBackground(new java.awt.Color(50, 62, 143));
         exit_AdminDashboard.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 2, 0, new java.awt.Color(255, 255, 255)));
         exit_AdminDashboard.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -170,59 +284,52 @@ public class AdminDashboard extends javax.swing.JFrame {
         javax.swing.GroupLayout exit_AdminDashboardLayout = new javax.swing.GroupLayout(exit_AdminDashboard);
         exit_AdminDashboard.setLayout(exit_AdminDashboardLayout);
         exit_AdminDashboardLayout.setHorizontalGroup(
-                exit_AdminDashboardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, exit_AdminDashboardLayout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(LOGOUTLOGO)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(LOGOUTLBL, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap())
+            exit_AdminDashboardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, exit_AdminDashboardLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(LOGOUTLOGO)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(LOGOUTLBL, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         exit_AdminDashboardLayout.setVerticalGroup(
-                exit_AdminDashboardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, exit_AdminDashboardLayout.createSequentialGroup()
-                                .addContainerGap(22, Short.MAX_VALUE)
-                                .addGroup(exit_AdminDashboardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(LOGOUTLBL, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(LOGOUTLOGO))
-                                .addContainerGap())
+            exit_AdminDashboardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, exit_AdminDashboardLayout.createSequentialGroup()
+                .addContainerGap(22, Short.MAX_VALUE)
+                .addGroup(exit_AdminDashboardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(LOGOUTLBL, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(LOGOUTLOGO))
+                .addContainerGap())
         );
-
-        REFRESH.setText("REFRESH");
-        REFRESH.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                REFRESHActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout admin_MenuLayout = new javax.swing.GroupLayout(admin_Menu);
         admin_Menu.setLayout(admin_MenuLayout);
         admin_MenuLayout.setHorizontalGroup(
-                admin_MenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(admin_MenuLayout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(admin_MenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(view_Deleted_Task, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(exit_AdminDashboard, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(view_Completed_Task, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addContainerGap())
-                        .addGroup(admin_MenuLayout.createSequentialGroup()
-                                .addGap(41, 41, 41)
-                                .addComponent(REFRESH)
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            admin_MenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(admin_MenuLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(admin_MenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(exit_AdminDashboard, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(view_Completed_Task, javax.swing.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE)
+                    .addComponent(view_Pending_Task, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(view_Deleted_Task, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(view_Refresh_Task, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         admin_MenuLayout.setVerticalGroup(
-                admin_MenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(admin_MenuLayout.createSequentialGroup()
-                                .addGap(40, 40, 40)
-                                .addComponent(view_Completed_Task, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(view_Deleted_Task, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(REFRESH)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 405, Short.MAX_VALUE)
-                                .addComponent(exit_AdminDashboard, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap())
+            admin_MenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(admin_MenuLayout.createSequentialGroup()
+                .addGap(40, 40, 40)
+                .addComponent(view_Completed_Task, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(view_Pending_Task, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(view_Deleted_Task, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(32, 32, 32)
+                .addComponent(view_Refresh_Task, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 278, Short.MAX_VALUE)
+                .addComponent(exit_AdminDashboard, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         jPanel1.add(admin_Menu, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 130, 180, 680));
@@ -234,19 +341,19 @@ public class AdminDashboard extends javax.swing.JFrame {
 
         adminTable.setAutoCreateRowSorter(true);
         adminTable.setModel(new javax.swing.table.DefaultTableModel(
-                new Object[][]{},
-                new String[]{
-                        "Ticket Id", "Student Number", "First Name", "Middle Name", "Last Name", "Email", "Document Type",
-                        "No. of Copies", "Purpose", "Special Instruction", "Type of Payment", "Supporting Document",
-                        "Proof of Payment", "Date of Payment", "Total Amount Paid", "Comment", "Date", "Status", "Action"
-                }
+            new Object [][] {
+
+            },
+            new String [] {
+                "Ticket Id", "Student Number", "First Name", "Middle Name", "Last Name", "Email", "Document Type", "No. of Copies", "Purpose", "Special Instruction", "Type of Payment", "Supporting Document", "Proof of Payment", "Date of Payment", "Total Amount Paid", "Comment", "Date", "Status"
+            }
         ) {
-            boolean[] canEdit = new boolean[]{
-                    false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, true, true
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, true, true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit[columnIndex];
+                return canEdit [columnIndex];
             }
         });
         adminTable.setGridColor(new java.awt.Color(204, 204, 204));
@@ -262,18 +369,18 @@ public class AdminDashboard extends javax.swing.JFrame {
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
-                jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 2207, Short.MAX_VALUE)
-                                .addGap(25, 25, 25))
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 2207, Short.MAX_VALUE)
+                .addGap(25, 25, 25))
         );
         jPanel3Layout.setVerticalGroup(
-                jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE)
-                                .addGap(147, 147, 147))
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE)
+                .addGap(147, 147, 147))
         );
 
         jScrollPane1.setViewportView(jPanel3);
@@ -295,22 +402,22 @@ public class AdminDashboard extends javax.swing.JFrame {
         javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
         jPanel8.setLayout(jPanel8Layout);
         jPanel8Layout.setHorizontalGroup(
-                jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel8Layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jLabel11)
-                                        .addComponent(jLabel15))
-                                .addContainerGap(79, Short.MAX_VALUE))
+            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel8Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel11)
+                    .addComponent(jLabel15))
+                .addContainerGap(79, Short.MAX_VALUE))
         );
         jPanel8Layout.setVerticalGroup(
-                jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel8Layout.createSequentialGroup()
-                                .addGap(19, 19, 19)
-                                .addComponent(jLabel11)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel15)
-                                .addContainerGap(11, Short.MAX_VALUE))
+            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel8Layout.createSequentialGroup()
+                .addGap(19, 19, 19)
+                .addComponent(jLabel11)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel15)
+                .addContainerGap(11, Short.MAX_VALUE))
         );
 
         jPanel1.add(jPanel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 120, 220, -1));
@@ -330,22 +437,22 @@ public class AdminDashboard extends javax.swing.JFrame {
         javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
         jPanel9.setLayout(jPanel9Layout);
         jPanel9Layout.setHorizontalGroup(
-                jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel9Layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(jLabel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addContainerGap(105, Short.MAX_VALUE))
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel9Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(105, Short.MAX_VALUE))
         );
         jPanel9Layout.setVerticalGroup(
-                jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel9Layout.createSequentialGroup()
-                                .addGap(19, 19, 19)
-                                .addComponent(jLabel9)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGap(18, 18, 18))
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel9Layout.createSequentialGroup()
+                .addGap(19, 19, 19)
+                .addComponent(jLabel9)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(18, 18, 18))
         );
 
         jPanel1.add(jPanel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 120, 220, -1));
@@ -365,22 +472,22 @@ public class AdminDashboard extends javax.swing.JFrame {
         javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
         jPanel10.setLayout(jPanel10Layout);
         jPanel10Layout.setHorizontalGroup(
-                jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel10Layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jLabel10)
-                                        .addComponent(jLabel14))
-                                .addContainerGap(57, Short.MAX_VALUE))
+            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel10Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel10)
+                    .addComponent(jLabel14))
+                .addContainerGap(57, Short.MAX_VALUE))
         );
         jPanel10Layout.setVerticalGroup(
-                jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel10Layout.createSequentialGroup()
-                                .addGap(19, 19, 19)
-                                .addComponent(jLabel10)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel14)
-                                .addContainerGap(11, Short.MAX_VALUE))
+            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel10Layout.createSequentialGroup()
+                .addGap(19, 19, 19)
+                .addComponent(jLabel10)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel14)
+                .addContainerGap(11, Short.MAX_VALUE))
         );
 
         jPanel1.add(jPanel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 120, 220, -1));
@@ -390,7 +497,7 @@ public class AdminDashboard extends javax.swing.JFrame {
         jLabel12.setBackground(new java.awt.Color(50, 62, 143));
         jLabel12.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel12.setForeground(new java.awt.Color(50, 62, 143));
-        jLabel12.setText("Deleted Tickets");
+        jLabel12.setText("Rejected Tickets");
 
         jLabel16.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
         jLabel16.setForeground(new java.awt.Color(50, 62, 143));
@@ -400,40 +507,37 @@ public class AdminDashboard extends javax.swing.JFrame {
         javax.swing.GroupLayout jPanel11Layout = new javax.swing.GroupLayout(jPanel11);
         jPanel11.setLayout(jPanel11Layout);
         jPanel11Layout.setHorizontalGroup(
-                jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel11Layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jLabel12)
-                                        .addComponent(jLabel16))
-                                .addContainerGap(88, Short.MAX_VALUE))
+            jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel11Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel12)
+                    .addComponent(jLabel16))
+                .addContainerGap(88, Short.MAX_VALUE))
         );
         jPanel11Layout.setVerticalGroup(
-                jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel11Layout.createSequentialGroup()
-                                .addGap(19, 19, 19)
-                                .addComponent(jLabel12)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel16)
-                                .addContainerGap(11, Short.MAX_VALUE))
+            jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel11Layout.createSequentialGroup()
+                .addGap(19, 19, 19)
+                .addComponent(jLabel12)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel16)
+                .addContainerGap(11, Short.MAX_VALUE))
         );
 
         jPanel1.add(jPanel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(980, 120, -1, -1));
 
-        jLabel3.setText("jLabel3");
-        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 140, -1, -1));
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addContainerGap())
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 829, Short.MAX_VALUE)
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 829, Short.MAX_VALUE)
         );
 
         pack();
@@ -442,10 +546,6 @@ public class AdminDashboard extends javax.swing.JFrame {
     private void exit_AdminDashboardMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_exit_AdminDashboardMouseClicked
         System.exit(0);
     }//GEN-LAST:event_exit_AdminDashboardMouseClicked
-
-    private void REFRESHActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_REFRESHActionPerformed
-        tableretrieval();
-    }//GEN-LAST:event_REFRESHActionPerformed
 
     private void adminTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_adminTableMouseClicked
         DefaultTableModel model = (DefaultTableModel) adminTable.getModel();
@@ -480,6 +580,22 @@ public class AdminDashboard extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_adminTableMouseClicked
+
+    private void view_Completed_TaskMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_view_Completed_TaskMouseClicked
+        updateSelectedStatusTo("Completed");
+    }//GEN-LAST:event_view_Completed_TaskMouseClicked
+
+    private void view_Deleted_TaskMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_view_Deleted_TaskMouseClicked
+        updateSelectedStatusTo("Rejected");
+    }//GEN-LAST:event_view_Deleted_TaskMouseClicked
+
+    private void view_Pending_TaskMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_view_Pending_TaskMouseClicked
+        updateSelectedStatusTo("Pending");
+    }//GEN-LAST:event_view_Pending_TaskMouseClicked
+
+    private void view_Refresh_TaskMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_view_Refresh_TaskMouseClicked
+        refreshTable();
+    }//GEN-LAST:event_view_Refresh_TaskMouseClicked
 
     /**
      * @param args the command line arguments
@@ -533,7 +649,6 @@ public class AdminDashboard extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel LOGOUTLBL;
     private javax.swing.JLabel LOGOUTLOGO;
-    private javax.swing.JButton REFRESH;
     private javax.swing.JTable adminTable;
     private javax.swing.JPanel admin_Menu;
     private javax.swing.JPanel exit_AdminDashboard;
@@ -545,11 +660,14 @@ public class AdminDashboard extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
@@ -563,8 +681,10 @@ public class AdminDashboard extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JPanel view_Completed_Task;
     private javax.swing.JPanel view_Deleted_Task;
+    private javax.swing.JPanel view_Pending_Task;
+    private javax.swing.JPanel view_Refresh_Task;
     // End of variables declaration//GEN-END:variables
-    private void tableretrieval() {
+    private void refreshTable() {
         String url = "jdbc:mysql://localhost:3306/ticket?zeroDateTimeBehavior=CONVERT_TO_NULL";
         String username = "root";
         String pass = "";
@@ -572,18 +692,18 @@ public class AdminDashboard extends javax.swing.JFrame {
         int totalTicketCount = 0;
         int completedTicketCount = 0;
         int pendingTicketCount = 0;
-        int deletedTicketCount = 0;
+        int rejectedTicketCount = 0;
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection(url, username, pass);
-            JOptionPane.showMessageDialog(null, "Connected");
 
             String query = "SELECT * FROM ticketable";
             Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
             resultSet = statement.executeQuery(query);
 
             DefaultTableModel model = (DefaultTableModel) adminTable.getModel();
+            model.setRowCount(0);
 
             while (resultSet.next()) {
                 totalTicketCount++;
@@ -592,18 +712,24 @@ public class AdminDashboard extends javax.swing.JFrame {
                 SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 String formattedDate = date == null ? "" : dateTimeFormat.format(date);
 
-                boolean hasListOfReqs = resultSet.getBlob("list_of_Requirements").length() > 0;
-                boolean hasProofOfPay = resultSet.getBlob("proof_of_Payment").length() > 0;
+                Blob listOfReqsBlob = resultSet.getBlob("list_of_Requirements");
+                Blob proofOfPayBlob = resultSet.getBlob("proof_of_Payment");
+
+                boolean hasListOfReqs = listOfReqsBlob != null && listOfReqsBlob.length() > 0;
+                boolean hasProofOfPay = proofOfPayBlob != null && proofOfPayBlob.length() > 0;
                 String ticketStatus = resultSet.getString("ticket_Status");
 
                 switch (ticketStatus) {
                     case "Completed" -> completedTicketCount++;
                     case "Pending" -> pendingTicketCount++;
-                    case "Deleted" -> deletedTicketCount++;
+                    case "Rejected" -> rejectedTicketCount++;
                 }
 
+                if (ticketStatus.equals("Rejected"))
+                    continue;
+
                 Object[] rowData = {
-                        resultSet.getInt("ticket_ID"),              // "Ticket Id"
+                        resultSet.getInt("ticket_friendlyId"),              // "Ticket Id"
                         resultSet.getString("student_Number"),      // "Student Number"
                         resultSet.getString("first_Name"),          // "First Name"
                         resultSet.getString("middle_Name"),         // "Middle Name"
@@ -630,7 +756,7 @@ public class AdminDashboard extends javax.swing.JFrame {
             jLabel13.setText(String.valueOf(totalTicketCount));
             jLabel14.setText(String.valueOf(completedTicketCount));
             jLabel15.setText(String.valueOf(pendingTicketCount));
-            jLabel16.setText(String.valueOf(deletedTicketCount));
+            jLabel16.setText(String.valueOf(rejectedTicketCount));
 
             model.fireTableDataChanged();
             adminTable.revalidate();
@@ -669,4 +795,39 @@ public class AdminDashboard extends javax.swing.JFrame {
         }
     }
 
+    private void updateSelectedStatusTo(String newStatus) {
+        int selectedRow = adminTable.getSelectedRow();
+        if (selectedRow != -1) {
+            int ticketId = (int) adminTable.getValueAt(selectedRow, TICKET_ID_INDEX);
+            updateTicketStatusTo(ticketId, newStatus);
+        } else {
+            JOptionPane.showMessageDialog(null, "No row selected");
+        }
+    }
+
+    private void updateTicketStatusTo(int ticketId, String status) {
+        String url = "jdbc:mysql://localhost:3306/ticket?zeroDateTimeBehavior=CONVERT_TO_NULL";
+        String username = "root";
+        String pass = "";
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(url, username, pass);
+
+            String query = "UPDATE ticketable SET ticket_Status = ? WHERE ticket_friendlyId = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, status);
+            preparedStatement.setInt(2, ticketId);
+            preparedStatement.executeUpdate();
+
+            int nextRow = (adminTable.getSelectedRow() + 1) % adminTable.getRowCount();
+
+            refreshTable();
+
+            adminTable.setRowSelectionInterval(nextRow, nextRow);
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Failed to connect to database");
+        }
+    }
 }

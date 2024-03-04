@@ -4,13 +4,21 @@
  */
 package com.mycompany.bulldogsticketingsystem;
 
-import javax.swing.UIManager;
+import javax.swing.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.sql.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  *
  * @author Kaede
  */
 public class StudentDashboard extends javax.swing.JFrame {
+    byte[] proofOfPaymentContent;
+    byte[] supportingDocumentContent;
 
     /**
      * Creates new form StudentDashboard
@@ -208,6 +216,11 @@ public class StudentDashboard extends javax.swing.JFrame {
         jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 800, 220, -1));
 
         jButton5.setText("Attach a File");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
         jPanel1.add(jButton5, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 760, 220, -1));
 
         jButton4.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -234,6 +247,11 @@ public class StudentDashboard extends javax.swing.JFrame {
         jButton3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jButton3.setForeground(new java.awt.Color(50, 62, 143));
         jButton3.setText("View Submitted Ticket");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
         jPanel1.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 870, 220, 50));
 
         jTextField8.addActionListener(new java.awt.event.ActionListener() {
@@ -299,9 +317,9 @@ public class StudentDashboard extends javax.swing.JFrame {
 
         jScrollPane2.setViewportView(jPanel1);
 
-        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(-30, 30, 990, 790));
+        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(-30, 30, 990, 1190));
 
-        setSize(new java.awt.Dimension(969, 821));
+        setSize(new java.awt.Dimension(969, 1368));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -330,15 +348,100 @@ public class StudentDashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField7ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        attachFile(jButton1, supportingDocumentContent);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jComboBox1ActionPerformed
 
+    private void attachFile(JButton button, byte[] fileContent) {
+        JFileChooser fileChooser = new JFileChooser();
+        int returnValue = fileChooser.showOpenDialog(null);
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            button.setText("Attached: " + selectedFile.getName());
+            // Store the file for later use
+            try {
+                FileInputStream fis = new FileInputStream(selectedFile);
+                fileContent = new byte[(int) selectedFile.length()];
+                fis.read(fileContent);
+                fis.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private String getInput(JTextField field) {
+        return field.getText();
+    }
+
+    private String getInput(JComboBox<String> comboBox) {
+        return (String) comboBox.getSelectedItem();
+    }
+
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
+        // Retrieve data from form fields
+        String firstName = getInput(jTextField1);
+        String middleName = getInput(jTextField3);
+        String lastName = getInput(jTextField4);
+        String studentNumber = getInput(jTextField5);
+        String email = getInput(jTextField6);
+        String typeOfDocument = getInput(Type_of_Documents);
+        int numberOfCopies = Integer.parseInt(getInput(jTextField2));
+        String purpose = getInput(jComboBox1);
+        String specialInstruction = getInput(jTextField7);
+        String paymentMethod = getInput(Payment_Method);
+        double totalAmountPaid = Double.parseDouble(getInput(jTextField8));
+
+        String url = "jdbc:mysql://localhost:3306/ticket?zeroDateTimeBehavior=CONVERT_TO_NULL";
+        String username = "root";
+        String pass = "";
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(url, username, pass);
+
+            LocalDateTime now = LocalDateTime.now();
+            String query = "INSERT INTO ticketable (first_Name, middle_Name, last_Name, student_Number, email_Address, document_Type, number_of_Copies, purpose, special_Instruction, type_of_Payment, total_amount_Paid, proof_of_Payment, list_of_Requirements, ticket_Status, date_Time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+
+            preparedStatement.setString(1, firstName);
+            preparedStatement.setString(2, middleName);
+            preparedStatement.setString(3, lastName);
+            preparedStatement.setString(4, studentNumber);
+            preparedStatement.setString(5, email);
+            preparedStatement.setString(6, typeOfDocument);
+            preparedStatement.setInt(7, numberOfCopies);
+            preparedStatement.setString(8, purpose);
+            preparedStatement.setString(9, specialInstruction);
+            preparedStatement.setString(10, paymentMethod);
+            preparedStatement.setDouble(11, totalAmountPaid);
+            preparedStatement.setBytes(12, proofOfPaymentContent);
+            preparedStatement.setBytes(13, supportingDocumentContent);
+            preparedStatement.setString(14, "Pending");
+            preparedStatement.setTimestamp(15, Timestamp.valueOf(now));
+            preparedStatement.executeUpdate();
+
+            ResultSet rs = preparedStatement.getGeneratedKeys();
+            if (rs.next()) {
+                int id = rs.getInt(1);
+
+                // Generate ticket_friendlyId
+                String ticket_friendlyId = String.format("%d%04d", LocalDate.now().getYear(), id);
+
+                // Update the new ticket with the generated ticket_friendlyId
+                query = "UPDATE ticketable SET ticket_friendlyId = ? WHERE ticket_ID = ?";
+                preparedStatement = connection.prepareStatement(query);
+                preparedStatement.setString(1, ticket_friendlyId);
+                preparedStatement.setInt(2, id);
+                preparedStatement.executeUpdate();
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Failed to connect to database");
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
@@ -348,6 +451,15 @@ public class StudentDashboard extends javax.swing.JFrame {
     private void jTextField8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField8ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField8ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        attachFile(jButton5, supportingDocumentContent);
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        new ViewStudentTickets().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
      * @param args the command line arguments

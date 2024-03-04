@@ -5,18 +5,10 @@
 package com.mycompany.bulldogsticketingsystem;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.sql.Blob;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,8 +17,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.UIDefaults;
-import javax.swing.UIManager;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -36,12 +26,16 @@ import javax.swing.table.DefaultTableModel;
 public class ViewStudentTickets extends javax.swing.JFrame {
 
     ResultSet resultSet;
+    String currentUser;
 
     /**
      * Creates new form ViewStudentTickets
      */
-    public ViewStudentTickets() {
+    public ViewStudentTickets(String currentUser) {
+        this.currentUser = currentUser; // Initialize the currentUser field in the constructor
         initComponents();
+
+        refreshTable();
     }
 
     /**
@@ -190,81 +184,11 @@ public class ViewStudentTickets extends javax.swing.JFrame {
         viewStudentTickets.setAutoCreateRowSorter(true);
         viewStudentTickets.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null}
+
             },
-            new String [] {
-                "Ticket Id", "Student Number", "First Name", "MIddle Name", "Last Name", "Email", "Document Type", "No. of Copies", "Purpose", "Special Instruction", "Type of Payment", "Supporting Document", "Proof of Payment", "Total Amount Paid", "Comment", "Date", "Status"
-            }
+                new String[]{
+                        "Ticket Id", "Student Number", "First Name", "Middle Name", "Last Name", "Email", "Document Type", "No. of Copies", "Purpose", "Special Instruction", "Type of Payment", "Supporting Document", "Proof of Payment", "Date of Payment", "Total Amount Paid", "Comment", "Date", "Status"
+                }
         ) {
             boolean[] canEdit = new boolean [] {
                 false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false
@@ -409,7 +333,7 @@ public class ViewStudentTickets extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ViewStudentTickets().setVisible(true);
+                new ViewStudentTickets("2021-100202").setVisible(true);
             }
         });
     }
@@ -432,7 +356,7 @@ public class ViewStudentTickets extends javax.swing.JFrame {
     private javax.swing.JTable viewStudentTickets;
     // End of variables declaration//GEN-END:variables
 
-    private void tableretrieval() {
+    private void refreshTable() {
         String url = "jdbc:mysql://localhost:3306/ticket?zeroDateTimeBehavior=CONVERT_TO_NULL";
         String username = "root";
         String pass = "";
@@ -440,51 +364,49 @@ public class ViewStudentTickets extends javax.swing.JFrame {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection(url, username, pass);
-            JOptionPane.showMessageDialog(null, "Connected");
 
-            String query = "SELECT * FROM ticketable";
-            Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            resultSet = statement.executeQuery(query);
-            resultSet = statement.executeQuery(query);
+            String query = "SELECT * FROM ticketable WHERE student_Number = ?";
+            PreparedStatement statement = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            statement.setString(1, this.currentUser);
+            resultSet = statement.executeQuery();
 
             DefaultTableModel model = (DefaultTableModel) viewStudentTickets.getModel();
+            model.setRowCount(0);
 
             while (resultSet.next()) {
-                String TicketID = String.valueOf(resultSet.getInt(1));
-                String StudentNo = resultSet.getString(2);
-                String FirstName = resultSet.getString(3);
-                String MiddleName = resultSet.getString(4);
-                String LastName = resultSet.getString(5);
-                String EmailAdd = resultSet.getString(6);
-                String DOCtype = resultSet.getString(7);
-                String NoOfCopies = resultSet.getString(8);
-                String Purpose = resultSet.getString(9);
-                String SpecialIns = resultSet.getString(10);
-                String TypeofPay = resultSet.getString(11);
-
-                // Fetch Blob values within the loop
-                Blob listOfReqsBlob = resultSet.getBlob(12);
-                BufferedImage listOfReqsImage = (listOfReqsBlob != null) ? blobToImage(listOfReqsBlob) : null;
-                String listOfReqsLink = (listOfReqsImage != null) ? "View Image" : "";
-
-                Date DateOfPay = resultSet.getDate(13);
-                Double TotalAmtPaid = resultSet.getDouble(14);
-
-                Blob proofOfPayBlob = resultSet.getBlob(15);
-                BufferedImage proofOfPayImage = (proofOfPayBlob != null) ? blobToImage(proofOfPayBlob) : null;
-                String proofOfPayLink = (proofOfPayImage != null) ? "View Image" : "";
-
-                String TicketStatus = String.valueOf(resultSet.getString(16));
-                String Comment = resultSet.getString(17);
-                Timestamp DateandTime = resultSet.getTimestamp(18);
-
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                String cDate = (DateOfPay != null) ? dateFormat.format(DateOfPay) : "";
-
+                Timestamp date = resultSet.getTimestamp("date_Time");
                 SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                String cdatetime = (DateandTime != null) ? dateTimeFormat.format(DateandTime) : "";
+                String formattedDate = date == null ? "" : dateTimeFormat.format(date);
 
-                Object[] rowData = {TicketID, StudentNo, FirstName, MiddleName, LastName, EmailAdd, DOCtype, NoOfCopies, Purpose, SpecialIns, TypeofPay, listOfReqsLink, cDate, TotalAmtPaid, proofOfPayLink, TicketStatus, Comment, cdatetime};
+                Blob listOfReqsBlob = resultSet.getBlob("list_of_Requirements");
+                Blob proofOfPayBlob = resultSet.getBlob("proof_of_Payment");
+
+                boolean hasListOfReqs = listOfReqsBlob != null && listOfReqsBlob.length() > 0;
+                boolean hasProofOfPay = proofOfPayBlob != null && proofOfPayBlob.length() > 0;
+                String ticketStatus = resultSet.getString("ticket_Status");
+
+                Object[] rowData = {
+                        resultSet.getInt("ticket_friendlyId"),              // "Ticket Id"
+                        resultSet.getString("student_Number"),      // "Student Number"
+                        resultSet.getString("first_Name"),          // "First Name"
+                        resultSet.getString("middle_Name"),         // "Middle Name"
+                        resultSet.getString("last_Name"),           // "Last Name"
+                        resultSet.getString("email_Address"),       // "Email"
+                        resultSet.getString("document_Type"),       // "Document Type"
+                        resultSet.getString("number_of_Copies"),    // "No. of Copies"
+                        resultSet.getString("purpose"),             // "Purpose"
+                        resultSet.getString("special_Instruction"), // "Special Instruction"
+                        resultSet.getString("type_of_Payment"),     // "Type of Payment"
+                        hasListOfReqs ? "View Image" : "",                     // "Supporting Document"
+                        hasProofOfPay ? "View Image" : "",                     // "Proof of Payment"
+                        resultSet.getDate("date_of_Payment"),       // "Date of Payment"
+                        resultSet.getDouble("total_amount_Paid"),   // "Total Amount Paid"
+                        resultSet.getString("comments"),            // "Comment"
+                        formattedDate,                                         // "Date"
+                        ticketStatus,       // "Status"
+                        "Action"
+                };
+
                 model.addRow(rowData);
             }
 
