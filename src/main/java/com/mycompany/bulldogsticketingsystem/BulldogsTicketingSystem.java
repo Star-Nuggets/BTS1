@@ -1,7 +1,6 @@
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  */
-
 package com.mycompany.bulldogsticketingsystem;
 
 /**
@@ -11,10 +10,6 @@ package com.mycompany.bulldogsticketingsystem;
 public class BulldogsTicketingSystem {
 
     public static void main(String[] args) {
-        
 
-       
-        
-        
     }
 }

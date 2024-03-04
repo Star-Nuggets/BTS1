@@ -15,8 +15,8 @@ public class Login extends javax.swing.JFrame {
      */
     public Login() {
         initComponents();
-        txtNUemail.setBackground(new java.awt.Color(0,0,0,1));
-        txtPassword.setBackground(new java.awt.Color(0,0,0,1));
+        txtNUemail.setBackground(new java.awt.Color(0, 0, 0, 1));
+        txtPassword.setBackground(new java.awt.Color(0, 0, 0, 1));
     }
 
     /**
@@ -251,17 +251,16 @@ public class Login extends javax.swing.JFrame {
     }//GEN-LAST:event_jPanel3MouseClicked
 
     private void disableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_disableMouseClicked
-        txtPassword.setEchoChar((char)0);
+        txtPassword.setEchoChar((char) 0);
         disable.setVisible(false);
         disable.setEnabled(false);
         show.setVisible(true);
         show.setEnabled(true);
-        
-        
+
     }//GEN-LAST:event_disableMouseClicked
 
     private void showMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_showMouseClicked
-        txtPassword.setEchoChar((char)8226);
+        txtPassword.setEchoChar((char) 8226);
         disable.setVisible(true);
         disable.setEnabled(true);
         show.setVisible(false);

@@ -57,7 +57,6 @@ public class TablePanelAction extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private com.mycompany.bulldogsticketingsystem.ActionButton cmdDelete;
     private com.mycompany.bulldogsticketingsystem.ActionButton cmdUpdate;

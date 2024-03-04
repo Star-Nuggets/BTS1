@@ -2,11 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-
-
-
 package com.mycompany.bulldogsticketingsystem;
+
 import javax.swing.UIManager;
+
 /**
  *
  * @author Kaede
@@ -319,8 +318,7 @@ public class StudentDashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void Type_of_DocumentsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Type_of_DocumentsActionPerformed
-        
-        
+
     }//GEN-LAST:event_Type_of_DocumentsActionPerformed
 
     private void jTextField6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField6ActionPerformed

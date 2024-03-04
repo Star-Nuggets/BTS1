@@ -28,12 +28,15 @@ import javax.swing.JOptionPane;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Kaede
  */
 public class AdminDashboard extends javax.swing.JFrame {
-        ResultSet resultSet;
+
+    ResultSet resultSet;
+
     /**
      * Creates new form AdminDashboard
      */
@@ -41,8 +44,7 @@ public class AdminDashboard extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
         adminTable.getColumnModel().getColumn(17).setCellRenderer(new TableActionCellRender());
-        
-        
+
     }
 
     /**
@@ -525,38 +527,38 @@ public class AdminDashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_REFRESHActionPerformed
 
     private void adminTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_adminTableMouseClicked
-                    DefaultTableModel model = (DefaultTableModel) adminTable.getModel();
-                    int row = adminTable.rowAtPoint(evt.getPoint());
-                    int col = adminTable.columnAtPoint(evt.getPoint());
-                    if (col == 11) { // Index of List of Requirement column
-                        JOptionPane.showMessageDialog(null, "Row: " + row + ", Col: " + col);
-                        String link = model.getValueAt(row, col).toString();
-                        if (link.equals("View Image")) {
-                            Blob listOfReqsBlob = null;
-                            try {
-                                resultSet.absolute(row + 1);
-                                listOfReqsBlob = resultSet.getBlob(12);
-                            } catch (SQLException ex) {
-                                Logger.getLogger(AdminDashboard.class.getName()).log(Level.SEVERE, null, ex);
-                            }
-                            displayImageInWindow(blobToImage(listOfReqsBlob));
-                             
-                        }
-                    } else if (col == 14) { // Index of Proof of Payment column
-                        JOptionPane.showMessageDialog(null, "Row: " + row + ", Col: " + col);
-                        String link = model.getValueAt(row, col).toString();
-                        if (link.equals("View Image")) {
-                            Blob proofOfPayBlob = null;
-                            try {
-                                resultSet.absolute(row + 1);
-                                proofOfPayBlob = resultSet.getBlob(15);
-                            } catch (SQLException ex) {
-                                Logger.getLogger(AdminDashboard.class.getName()).log(Level.SEVERE, null, ex);
-                            }
-                            displayImageInWindow(blobToImage(proofOfPayBlob));
-                            
-                        }
-                    }
+        DefaultTableModel model = (DefaultTableModel) adminTable.getModel();
+        int row = adminTable.rowAtPoint(evt.getPoint());
+        int col = adminTable.columnAtPoint(evt.getPoint());
+        if (col == 11) { // Index of List of Requirement column
+            JOptionPane.showMessageDialog(null, "Row: " + row + ", Col: " + col);
+            String link = model.getValueAt(row, col).toString();
+            if (link.equals("View Image")) {
+                Blob listOfReqsBlob = null;
+                try {
+                    resultSet.absolute(row + 1);
+                    listOfReqsBlob = resultSet.getBlob(12);
+                } catch (SQLException ex) {
+                    Logger.getLogger(AdminDashboard.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                displayImageInWindow(blobToImage(listOfReqsBlob));
+
+            }
+        } else if (col == 14) { // Index of Proof of Payment column
+            JOptionPane.showMessageDialog(null, "Row: " + row + ", Col: " + col);
+            String link = model.getValueAt(row, col).toString();
+            if (link.equals("View Image")) {
+                Blob proofOfPayBlob = null;
+                try {
+                    resultSet.absolute(row + 1);
+                    proofOfPayBlob = resultSet.getBlob(15);
+                } catch (SQLException ex) {
+                    Logger.getLogger(AdminDashboard.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                displayImageInWindow(blobToImage(proofOfPayBlob));
+
+            }
+        }
     }//GEN-LAST:event_adminTableMouseClicked
 
     /**
@@ -596,11 +598,10 @@ public class AdminDashboard extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(AdminDashboard.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        
+
         UIDefaults defaults = UIManager.getLookAndFeelDefaults();
         defaults.putIfAbsent("Table.alternateRowColor", Color.LIGHT_GRAY);
-        
-        
+
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -654,42 +655,40 @@ public class AdminDashboard extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Connected");
 
             String query = "SELECT * FROM ticketable";
-             Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
-             resultSet = statement.executeQuery(query);
-             resultSet = statement.executeQuery(query);
+            Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            resultSet = statement.executeQuery(query);
+            resultSet = statement.executeQuery(query);
 
             DefaultTableModel model = (DefaultTableModel) adminTable.getModel();
 
             while (resultSet.next()) {
-            String TicketID = String.valueOf(resultSet.getInt(1));
-            String StudentNo = resultSet.getString(2);
-            String FirstName = resultSet.getString(3);
-            String MiddleName = resultSet.getString(4);
-            String LastName = resultSet.getString(5);
-            String EmailAdd = resultSet.getString(6);
-            String DOCtype = resultSet.getString(7);
-            String NoOfCopies = resultSet.getString(8);
-            String Purpose = resultSet.getString(9);
-            String SpecialIns = resultSet.getString(10);
-            String TypeofPay = resultSet.getString(11);
+                String TicketID = String.valueOf(resultSet.getInt(1));
+                String StudentNo = resultSet.getString(2);
+                String FirstName = resultSet.getString(3);
+                String MiddleName = resultSet.getString(4);
+                String LastName = resultSet.getString(5);
+                String EmailAdd = resultSet.getString(6);
+                String DOCtype = resultSet.getString(7);
+                String NoOfCopies = resultSet.getString(8);
+                String Purpose = resultSet.getString(9);
+                String SpecialIns = resultSet.getString(10);
+                String TypeofPay = resultSet.getString(11);
 
-            // Fetch Blob values within the loop
-            Blob listOfReqsBlob = resultSet.getBlob(12);
-            BufferedImage listOfReqsImage = (listOfReqsBlob != null) ? blobToImage(listOfReqsBlob) : null;
-            String listOfReqsLink = (listOfReqsImage != null) ? "View Image" : "";
+                // Fetch Blob values within the loop
+                Blob listOfReqsBlob = resultSet.getBlob(12);
+                BufferedImage listOfReqsImage = (listOfReqsBlob != null) ? blobToImage(listOfReqsBlob) : null;
+                String listOfReqsLink = (listOfReqsImage != null) ? "View Image" : "";
 
-            Date DateOfPay = resultSet.getDate(13);
-            Double TotalAmtPaid = resultSet.getDouble(14);
+                Date DateOfPay = resultSet.getDate(13);
+                Double TotalAmtPaid = resultSet.getDouble(14);
 
-            Blob proofOfPayBlob = resultSet.getBlob(15);
-            BufferedImage proofOfPayImage = (proofOfPayBlob != null) ? blobToImage(proofOfPayBlob) : null;
-            String proofOfPayLink = (proofOfPayImage != null) ? "View Image" : "";
+                Blob proofOfPayBlob = resultSet.getBlob(15);
+                BufferedImage proofOfPayImage = (proofOfPayBlob != null) ? blobToImage(proofOfPayBlob) : null;
+                String proofOfPayLink = (proofOfPayImage != null) ? "View Image" : "";
 
-            String TicketStatus = String.valueOf(resultSet.getString(16));
-            String Comment = resultSet.getString(17);
-            Timestamp DateandTime = resultSet.getTimestamp(18);
-                
-                
+                String TicketStatus = String.valueOf(resultSet.getString(16));
+                String Comment = resultSet.getString(17);
+                Timestamp DateandTime = resultSet.getTimestamp(18);
 
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 String cDate = (DateOfPay != null) ? dateFormat.format(DateOfPay) : "";
@@ -701,39 +700,38 @@ public class AdminDashboard extends javax.swing.JFrame {
                 model.addRow(rowData);
             }
 
-
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Failed to connect to database");
         }
     }
 
-      private BufferedImage blobToImage(Blob blob) {
-            try {
-                if (blob != null) {
+    private BufferedImage blobToImage(Blob blob) {
+        try {
+            if (blob != null) {
                 byte[] imageData = blob.getBytes(1, (int) blob.length());
                 ByteArrayInputStream bis = new ByteArrayInputStream(imageData);
                 return ImageIO.read(bis);
-                } else {
-            // Handle the case where the Blob object is null
+            } else {
+                // Handle the case where the Blob object is null
+                return null;
+            }
+        } catch (SQLException | IOException ex) {
+            ex.printStackTrace();
             return null;
         }
-            } catch (SQLException | IOException ex) {
-                  ex.printStackTrace();
-                    return null;
     }
-}
 
     public static void displayImageInWindow(BufferedImage image) {
-    if (image != null) {
-        JFrame frame = new JFrame();
-        JLabel label = new JLabel(new ImageIcon(image));
-        frame.getContentPane().add(label, BorderLayout.CENTER);
-        frame.pack();
-        frame.setVisible(true);
-    } else {
-        System.err.println("Error: Null image provided");
+        if (image != null) {
+            JFrame frame = new JFrame();
+            JLabel label = new JLabel(new ImageIcon(image));
+            frame.getContentPane().add(label, BorderLayout.CENTER);
+            frame.pack();
+            frame.setVisible(true);
+        } else {
+            System.err.println("Error: Null image provided");
+        }
     }
-}
 
 }

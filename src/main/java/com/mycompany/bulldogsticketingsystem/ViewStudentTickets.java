@@ -34,7 +34,9 @@ import javax.swing.table.DefaultTableModel;
  * @author Kaede
  */
 public class ViewStudentTickets extends javax.swing.JFrame {
+
     ResultSet resultSet;
+
     /**
      * Creates new form ViewStudentTickets
      */
@@ -430,7 +432,7 @@ public class ViewStudentTickets extends javax.swing.JFrame {
     private javax.swing.JTable viewStudentTickets;
     // End of variables declaration//GEN-END:variables
 
-private void tableretrieval() {
+    private void tableretrieval() {
         String url = "jdbc:mysql://localhost:3306/ticket?zeroDateTimeBehavior=CONVERT_TO_NULL";
         String username = "root";
         String pass = "";
@@ -441,42 +443,40 @@ private void tableretrieval() {
             JOptionPane.showMessageDialog(null, "Connected");
 
             String query = "SELECT * FROM ticketable";
-             Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
-             resultSet = statement.executeQuery(query);
-             resultSet = statement.executeQuery(query);
+            Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            resultSet = statement.executeQuery(query);
+            resultSet = statement.executeQuery(query);
 
             DefaultTableModel model = (DefaultTableModel) viewStudentTickets.getModel();
 
             while (resultSet.next()) {
-            String TicketID = String.valueOf(resultSet.getInt(1));
-            String StudentNo = resultSet.getString(2);
-            String FirstName = resultSet.getString(3);
-            String MiddleName = resultSet.getString(4);
-            String LastName = resultSet.getString(5);
-            String EmailAdd = resultSet.getString(6);
-            String DOCtype = resultSet.getString(7);
-            String NoOfCopies = resultSet.getString(8);
-            String Purpose = resultSet.getString(9);
-            String SpecialIns = resultSet.getString(10);
-            String TypeofPay = resultSet.getString(11);
+                String TicketID = String.valueOf(resultSet.getInt(1));
+                String StudentNo = resultSet.getString(2);
+                String FirstName = resultSet.getString(3);
+                String MiddleName = resultSet.getString(4);
+                String LastName = resultSet.getString(5);
+                String EmailAdd = resultSet.getString(6);
+                String DOCtype = resultSet.getString(7);
+                String NoOfCopies = resultSet.getString(8);
+                String Purpose = resultSet.getString(9);
+                String SpecialIns = resultSet.getString(10);
+                String TypeofPay = resultSet.getString(11);
 
-            // Fetch Blob values within the loop
-            Blob listOfReqsBlob = resultSet.getBlob(12);
-            BufferedImage listOfReqsImage = (listOfReqsBlob != null) ? blobToImage(listOfReqsBlob) : null;
-            String listOfReqsLink = (listOfReqsImage != null) ? "View Image" : "";
+                // Fetch Blob values within the loop
+                Blob listOfReqsBlob = resultSet.getBlob(12);
+                BufferedImage listOfReqsImage = (listOfReqsBlob != null) ? blobToImage(listOfReqsBlob) : null;
+                String listOfReqsLink = (listOfReqsImage != null) ? "View Image" : "";
 
-            Date DateOfPay = resultSet.getDate(13);
-            Double TotalAmtPaid = resultSet.getDouble(14);
+                Date DateOfPay = resultSet.getDate(13);
+                Double TotalAmtPaid = resultSet.getDouble(14);
 
-            Blob proofOfPayBlob = resultSet.getBlob(15);
-            BufferedImage proofOfPayImage = (proofOfPayBlob != null) ? blobToImage(proofOfPayBlob) : null;
-            String proofOfPayLink = (proofOfPayImage != null) ? "View Image" : "";
+                Blob proofOfPayBlob = resultSet.getBlob(15);
+                BufferedImage proofOfPayImage = (proofOfPayBlob != null) ? blobToImage(proofOfPayBlob) : null;
+                String proofOfPayLink = (proofOfPayImage != null) ? "View Image" : "";
 
-            String TicketStatus = String.valueOf(resultSet.getString(16));
-            String Comment = resultSet.getString(17);
-            Timestamp DateandTime = resultSet.getTimestamp(18);
-                
-                
+                String TicketStatus = String.valueOf(resultSet.getString(16));
+                String Comment = resultSet.getString(17);
+                Timestamp DateandTime = resultSet.getTimestamp(18);
 
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 String cDate = (DateOfPay != null) ? dateFormat.format(DateOfPay) : "";
@@ -488,39 +488,38 @@ private void tableretrieval() {
                 model.addRow(rowData);
             }
 
-
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Failed to connect to database");
         }
     }
 
-      private BufferedImage blobToImage(Blob blob) {
-            try {
-                if (blob != null) {
+    private BufferedImage blobToImage(Blob blob) {
+        try {
+            if (blob != null) {
                 byte[] imageData = blob.getBytes(1, (int) blob.length());
                 ByteArrayInputStream bis = new ByteArrayInputStream(imageData);
                 return ImageIO.read(bis);
-                } else {
-            // Handle the case where the Blob object is null
+            } else {
+                // Handle the case where the Blob object is null
+                return null;
+            }
+        } catch (SQLException | IOException ex) {
+            ex.printStackTrace();
             return null;
         }
-            } catch (SQLException | IOException ex) {
-                  ex.printStackTrace();
-                    return null;
     }
-}
 
     public static void displayImageInWindow(BufferedImage image) {
-    if (image != null) {
-        JFrame frame = new JFrame();
-        JLabel label = new JLabel(new ImageIcon(image));
-        frame.getContentPane().add(label, BorderLayout.CENTER);
-        frame.pack();
-        frame.setVisible(true);
-    } else {
-        System.err.println("Error: Null image provided");
+        if (image != null) {
+            JFrame frame = new JFrame();
+            JLabel label = new JLabel(new ImageIcon(image));
+            frame.getContentPane().add(label, BorderLayout.CENTER);
+            frame.pack();
+            frame.setVisible(true);
+        } else {
+            System.err.println("Error: Null image provided");
+        }
     }
-}
 
 }
