@@ -83,7 +83,6 @@ public class StudentDashboard extends javax.swing.JFrame {
         ExitX = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jPanel1 = new javax.swing.JPanel();
-        jPanel5 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         WelcomeUser = new javax.swing.JLabel();
@@ -120,6 +119,7 @@ public class StudentDashboard extends javax.swing.JFrame {
         jComboBox1 = new javax.swing.JComboBox<>();
         Payment_Method = new javax.swing.JComboBox<>();
         SecondBgStudentDashboard = new javax.swing.JLabel();
+        jPanel5 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
@@ -127,7 +127,7 @@ public class StudentDashboard extends javax.swing.JFrame {
 
         jPanel3.setBackground(new java.awt.Color(50, 62, 143));
         jPanel3.setForeground(new java.awt.Color(50, 62, 143));
-        getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(960, 40, 10, 510));
+        getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(960, 40, 10, 970));
 
         jPanel4.setBackground(new java.awt.Color(50, 62, 143));
         jPanel4.setForeground(new java.awt.Color(50, 62, 143));
@@ -152,10 +152,6 @@ public class StudentDashboard extends javax.swing.JFrame {
 
         jPanel1.setBackground(new java.awt.Color(50, 62, 143));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jPanel5.setBackground(new java.awt.Color(50, 62, 143));
-        jPanel5.setForeground(new java.awt.Color(50, 62, 143));
-        jPanel1.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 510, 970, -1));
 
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -359,9 +355,13 @@ public class StudentDashboard extends javax.swing.JFrame {
 
         jScrollPane2.setViewportView(jPanel1);
 
-        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(-30, 30, 990, 520));
+        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(-30, 30, 990, 480));
 
-        setSize(new java.awt.Dimension(969, 551));
+        jPanel5.setBackground(new java.awt.Color(50, 62, 143));
+        jPanel5.setForeground(new java.awt.Color(50, 62, 143));
+        getContentPane().add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 510, 970, -1));
+
+        setSize(new java.awt.Dimension(969, 519));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
