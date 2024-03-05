@@ -561,7 +561,6 @@ public class AdminDashboard extends javax.swing.JFrame {
         int row = adminTable.rowAtPoint(evt.getPoint());
         int col = adminTable.columnAtPoint(evt.getPoint());
         if (col == SUPPORTING_DOCUMENT_INDEX) {
-            JOptionPane.showMessageDialog(null, "Row: " + row + ", Col: " + col);
             String link = model.getValueAt(row, col).toString();
             if (link.equals("View Image")) {
                 try {
@@ -575,7 +574,6 @@ public class AdminDashboard extends javax.swing.JFrame {
 
             }
         } else if (col == PROOF_OF_PAYMENT_INDEX) {
-            JOptionPane.showMessageDialog(null, "Row: " + row + ", Col: " + col);
             String link = model.getValueAt(row, col).toString();
             if (link.equals("View Image")) {
                 try {
