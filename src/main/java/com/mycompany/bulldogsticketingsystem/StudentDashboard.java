@@ -78,12 +78,12 @@ public class StudentDashboard extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel5 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         ExitX = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jPanel1 = new javax.swing.JPanel();
+        jPanel5 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         WelcomeUser = new javax.swing.JLabel();
@@ -125,13 +125,9 @@ public class StudentDashboard extends javax.swing.JFrame {
         setUndecorated(true);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel5.setBackground(new java.awt.Color(50, 62, 143));
-        jPanel5.setForeground(new java.awt.Color(50, 62, 143));
-        getContentPane().add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 810, 970, 10));
-
         jPanel3.setBackground(new java.awt.Color(50, 62, 143));
         jPanel3.setForeground(new java.awt.Color(50, 62, 143));
-        getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(960, 40, 10, 780));
+        getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(960, 40, 10, 510));
 
         jPanel4.setBackground(new java.awt.Color(50, 62, 143));
         jPanel4.setForeground(new java.awt.Color(50, 62, 143));
@@ -156,6 +152,10 @@ public class StudentDashboard extends javax.swing.JFrame {
 
         jPanel1.setBackground(new java.awt.Color(50, 62, 143));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jPanel5.setBackground(new java.awt.Color(50, 62, 143));
+        jPanel5.setForeground(new java.awt.Color(50, 62, 143));
+        jPanel1.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 510, 970, -1));
 
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -335,7 +335,7 @@ public class StudentDashboard extends javax.swing.JFrame {
         });
         jPanel1.add(jTextField7, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 580, 400, 100));
 
-        Type_of_Documents.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{"Select your type of document", "Assigned Flowchart/Curriculum - 54.00", "Certificate of Attendance - 157.00", "Certificate of Course Description - 157.00", "Certificate of English Medium - 157.00", "Certificate of Enrollment - 157.00", "Certificate of GWA - 157.00", "Certificate of Registration - 54.00", "CTC of Grades - 54.00", "Honorable Dismissal/Transfer Credentials - 1,060.00", "Student Flowchart - 54.00", "Transcript of Records - 1,030.00"}));
+        Type_of_Documents.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select your type of document", "Assigned Flowchart/Curriculum - 54.00", "Certificate of Attendance - 157.00", "Certificate of Course Description - 157.00", "Certificate of English Medium - 157.00", "Certificate of Enrollment - 157.00", "Certificate of GWA - 157.00", "Certificate of Registration - 54.00", "CTC of Grades - 54.00", "Honorable Dismissal/Transfer Credentials - 1,060.00", "Student Flowchart - 54.00", "Transcript of Records - 1,030.00" }));
         Type_of_Documents.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 Type_of_DocumentsActionPerformed(evt);
@@ -343,7 +343,7 @@ public class StudentDashboard extends javax.swing.JFrame {
         });
         jPanel1.add(Type_of_Documents, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 380, 260, -1));
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{"Select your Purpose", "Employment", "Scholarship/Educational Assistance", "Other"}));
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select your Purpose", "Employment", "Scholarship/Educational Assistance", "Other" }));
         jComboBox1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBox1ActionPerformed(evt);
@@ -351,7 +351,7 @@ public class StudentDashboard extends javax.swing.JFrame {
         });
         jPanel1.add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 480, 260, -1));
 
-        Payment_Method.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{"Choose Payment Method", "Gcash", "Bank Transfer"}));
+        Payment_Method.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Choose Payment Method", "Gcash", "Bank Transfer" }));
         jPanel1.add(Payment_Method, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 690, 260, -1));
 
         SecondBgStudentDashboard.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/BgStudentDashboard.png"))); // NOI18N
@@ -359,9 +359,9 @@ public class StudentDashboard extends javax.swing.JFrame {
 
         jScrollPane2.setViewportView(jPanel1);
 
-        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(-30, 30, 990, 780));
+        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(-30, 30, 990, 520));
 
-        setSize(new java.awt.Dimension(969, 820));
+        setSize(new java.awt.Dimension(969, 551));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
