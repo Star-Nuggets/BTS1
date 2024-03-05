@@ -4,7 +4,12 @@
  */
 package com.mycompany.bulldogsticketingsystem;
 
-import java.awt.BorderLayout;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -12,18 +17,17 @@ import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
 
 /**
  *
  * @author Kaede
  */
 public class ViewStudentTickets extends javax.swing.JFrame {
+
+    public static final int SUPPORTING_DOCUMENT_INDEX = 11;
+    public static final int PROOF_OF_PAYMENT_INDEX = 12;
+    public static final int TICKET_STATUS_INDEX = 17;
+    public static final int TICKET_ID_INDEX = 0;
 
     ResultSet resultSet;
     String currentUser;
@@ -34,6 +38,8 @@ public class ViewStudentTickets extends javax.swing.JFrame {
     public ViewStudentTickets(String currentUser) {
         this.currentUser = currentUser; // Initialize the currentUser field in the constructor
         initComponents();
+        DefaultTableModel model = (DefaultTableModel) viewStudentTickets.getModel();
+        model.addTableModelListener(ticketStatusChangedListener(model));
 
         refreshTable();
     }
@@ -77,9 +83,9 @@ public class ViewStudentTickets extends javax.swing.JFrame {
         jPanel4.setBackground(new java.awt.Color(255, 255, 255));
         jPanel4.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 2, 0, new java.awt.Color(3, 40, 239)));
         jPanel4.setForeground(new java.awt.Color(50, 62, 143));
-        jPanel4.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                jPanel4KeyPressed(evt);
+        jPanel4.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jPanel4MousePressed(evt);
             }
         });
 
@@ -192,11 +198,11 @@ public class ViewStudentTickets extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Ticket Id", "Student Number", "First Name", "MIddle Name", "Last Name", "Email", "Document Type", "No. of Copies", "Purpose", "Special Instruction", "Type of Payment", "Supporting Document", "Proof of Payment", "Total Amount Paid", "Comment", "Date", "Status"
+                "Ticket Id", "Student Number", "First Name", "Middle Name", "Last Name", "Email", "Document Type", "No. of Copies", "Purpose", "Special Instruction", "Type of Payment", "Supporting Document", "Proof of Payment", "Date of Payment", "Total Amount Paid", "Comment", "Date", "Status"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false
+                false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -269,37 +275,84 @@ public class ViewStudentTickets extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void updateTicketCommentTo(int ticketId, String comment) {
+        String url = "jdbc:mysql://localhost:3306/ticket?zeroDateTimeBehavior=CONVERT_TO_NULL";
+        String username = "root";
+        String pass = "";
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(url, username, pass);
+
+            String query = "UPDATE ticketable SET comments = ? WHERE ticket_friendlyId = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, comment);
+            preparedStatement.setInt(2, ticketId);
+            preparedStatement.executeUpdate();
+
+            refreshTable();
+
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Failed to connect to database");
+        }
+    }
+
+    private TableModelListener ticketStatusChangedListener(DefaultTableModel model) {
+        return e -> {
+            if (e.getType() == TableModelEvent.UPDATE) {
+                int row = e.getFirstRow();
+                int column = e.getColumn();
+                if (column == TICKET_STATUS_INDEX) { // Assuming the Status is in the 17th column (index 16)
+                    String newStatus = (String) model.getValueAt(row, column);
+                    if (newStatus.equals("Completed") || newStatus.equals("Rejected")) {
+                        int ticketId = (int) model.getValueAt(row, 0); // Assuming the Ticket Id is in the first column
+                        updateTicketStatusTo(ticketId, newStatus);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Invalid status. Please enter either 'Completed' or 'Rejected'.");
+                        // Reset the status to its previous value
+                        try {
+                            String oldStatus = resultSet.getString("ticket_Status");
+                            model.setValueAt(oldStatus, row, column);
+                        } catch (SQLException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+            }
+        };
+    }
+
     private void viewStudentTicketsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_viewStudentTicketsMouseClicked
         DefaultTableModel model = (DefaultTableModel) viewStudentTickets.getModel();
         int row = viewStudentTickets.rowAtPoint(evt.getPoint());
         int col = viewStudentTickets.columnAtPoint(evt.getPoint());
-        if (col == 11) { // Index of List of Requirement column
+        if (col == SUPPORTING_DOCUMENT_INDEX) {
             JOptionPane.showMessageDialog(null, "Row: " + row + ", Col: " + col);
             String link = model.getValueAt(row, col).toString();
             if (link.equals("View Image")) {
-                Blob listOfReqsBlob = null;
                 try {
                     resultSet.absolute(row + 1);
-                    listOfReqsBlob = resultSet.getBlob(12);
+                    Blob listOfReqsBlob = resultSet.getBlob("list_of_Requirements");
+                    BufferedImage image = blobToImage(listOfReqsBlob);
+                    displayImageInWindow(image);
                 } catch (SQLException ex) {
                     Logger.getLogger(AdminDashboard.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                displayImageInWindow(blobToImage(listOfReqsBlob));
 
             }
-        } else if (col == 14) { // Index of Proof of Payment column
+        } else if (col == PROOF_OF_PAYMENT_INDEX) {
             JOptionPane.showMessageDialog(null, "Row: " + row + ", Col: " + col);
             String link = model.getValueAt(row, col).toString();
             if (link.equals("View Image")) {
-                Blob proofOfPayBlob = null;
                 try {
                     resultSet.absolute(row + 1);
-                    proofOfPayBlob = resultSet.getBlob(15);
+                    Blob proofOfPayBlob = resultSet.getBlob("proof_of_Payment");
+                    BufferedImage image = blobToImage(proofOfPayBlob);
+                    displayImageInWindow(image);
                 } catch (SQLException ex) {
                     Logger.getLogger(AdminDashboard.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                displayImageInWindow(blobToImage(proofOfPayBlob));
-
             }
         }
     }//GEN-LAST:event_viewStudentTicketsMouseClicked
@@ -309,10 +362,10 @@ public class ViewStudentTickets extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_jPanel5MouseClicked
 
-    private void jPanel4KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jPanel4KeyPressed
+    private void jPanel4MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel4MousePressed
         new StudentDashboard(currentUser).setVisible(true);
         this.dispose();
-    }//GEN-LAST:event_jPanel4KeyPressed
+    }//GEN-LAST:event_jPanel4MousePressed
 
     /**
      * @param args the command line arguments
@@ -376,49 +429,60 @@ public class ViewStudentTickets extends javax.swing.JFrame {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection(url, username, pass);
 
-            String query = "SELECT * FROM ticketable WHERE student_Number = ?";
-            PreparedStatement statement = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            String query = "SELECT NU_ID FROM studentlogin WHERE NU_Email = ?";
+            PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, currentUser);
             resultSet = statement.executeQuery();
 
-            DefaultTableModel model = (DefaultTableModel) viewStudentTickets.getModel();
-            model.setRowCount(0);
+            if (resultSet.next()) {
+                String studentNumber = resultSet.getString("NU_ID");
 
-            while (resultSet.next()) {
-                Timestamp date = resultSet.getTimestamp("date_Time");
-                SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                String formattedDate = date == null ? "" : dateTimeFormat.format(date);
+                query = "SELECT * FROM ticketable WHERE student_Number = ?";
+                statement = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                statement.setString(1, studentNumber);
+                resultSet = statement.executeQuery();
 
-                Blob listOfReqsBlob = resultSet.getBlob("list_of_Requirements");
-                Blob proofOfPayBlob = resultSet.getBlob("proof_of_Payment");
+                DefaultTableModel model = (DefaultTableModel) viewStudentTickets.getModel();
+                model.setRowCount(0);
 
-                boolean hasListOfReqs = listOfReqsBlob != null && listOfReqsBlob.length() > 0;
-                boolean hasProofOfPay = proofOfPayBlob != null && proofOfPayBlob.length() > 0;
-                String ticketStatus = resultSet.getString("ticket_Status");
+                while (resultSet.next()) {
+                    Timestamp date = resultSet.getTimestamp("date_Time");
+                    SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    String formattedDate = date == null ? "" : dateTimeFormat.format(date);
 
-                Object[] rowData = {
-                        resultSet.getInt("ticket_friendlyId"),              // "Ticket Id"
-                        resultSet.getString("student_Number"),      // "Student Number"
-                        resultSet.getString("first_Name"),          // "First Name"
-                        resultSet.getString("middle_Name"),         // "Middle Name"
-                        resultSet.getString("last_Name"),           // "Last Name"
-                        resultSet.getString("email_Address"),       // "Email"
-                        resultSet.getString("document_Type"),       // "Document Type"
-                        resultSet.getString("number_of_Copies"),    // "No. of Copies"
-                        resultSet.getString("purpose"),             // "Purpose"
-                        resultSet.getString("special_Instruction"), // "Special Instruction"
-                        resultSet.getString("type_of_Payment"),     // "Type of Payment"
-                        hasListOfReqs ? "View Image" : "",                     // "Supporting Document"
-                        hasProofOfPay ? "View Image" : "",                     // "Proof of Payment"
-                        resultSet.getDate("date_of_Payment"),       // "Date of Payment"
-                        resultSet.getDouble("total_amount_Paid"),   // "Total Amount Paid"
-                        resultSet.getString("comments"),            // "Comment"
-                        formattedDate,                                         // "Date"
-                        ticketStatus,       // "Status"
-                        "Action"
-                };
+                    Blob listOfReqsBlob = resultSet.getBlob("list_of_Requirements");
+                    Blob proofOfPayBlob = resultSet.getBlob("proof_of_Payment");
 
-                model.addRow(rowData);
+                    boolean hasListOfReqs = listOfReqsBlob != null && listOfReqsBlob.length() > 0;
+                    boolean hasProofOfPay = proofOfPayBlob != null && proofOfPayBlob.length() > 0;
+                    String ticketStatus = resultSet.getString("ticket_Status");
+
+                    Object[] rowData = {
+                            resultSet.getInt("ticket_friendlyId"),              // "Ticket Id"
+                            resultSet.getString("student_Number"),      // "Student Number"
+                            resultSet.getString("first_Name"),          // "First Name"
+                            resultSet.getString("middle_Name"),         // "Middle Name"
+                            resultSet.getString("last_Name"),           // "Last Name"
+                            resultSet.getString("email_Address"),       // "Email"
+                            resultSet.getString("document_Type"),       // "Document Type"
+                            resultSet.getString("number_of_Copies"),    // "No. of Copies"
+                            resultSet.getString("purpose"),             // "Purpose"
+                            resultSet.getString("special_Instruction"), // "Special Instruction"
+                            resultSet.getString("type_of_Payment"),     // "Type of Payment"
+                            hasListOfReqs ? "View Image" : "",                     // "Supporting Document"
+                            hasProofOfPay ? "View Image" : "",                     // "Proof of Payment"
+                            resultSet.getDate("date_of_Payment"),       // "Date of Payment"
+                            resultSet.getDouble("total_amount_Paid"),   // "Total Amount Paid"
+                            resultSet.getString("comments"),            // "Comment"
+                            formattedDate,                                         // "Date"
+                            ticketStatus,       // "Status"
+                            "Action"
+                    };
+
+                    model.addRow(rowData);
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "No student number found for the current user");
             }
 
         } catch (ClassNotFoundException | SQLException e) {
@@ -455,4 +519,29 @@ public class ViewStudentTickets extends javax.swing.JFrame {
         }
     }
 
+    private void updateTicketStatusTo(int ticketId, String status) {
+        String url = "jdbc:mysql://localhost:3306/ticket?zeroDateTimeBehavior=CONVERT_TO_NULL";
+        String username = "root";
+        String pass = "";
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(url, username, pass);
+
+            String query = "UPDATE ticketable SET ticket_Status = ? WHERE ticket_friendlyId = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, status);
+            preparedStatement.setInt(2, ticketId);
+            preparedStatement.executeUpdate();
+
+            int nextRow = (viewStudentTickets.getSelectedRow() + 1) % viewStudentTickets.getRowCount();
+
+            refreshTable();
+
+            viewStudentTickets.setRowSelectionInterval(nextRow, nextRow);
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Failed to connect to database");
+        }
+    }
 }

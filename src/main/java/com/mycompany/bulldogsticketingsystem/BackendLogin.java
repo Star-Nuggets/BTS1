@@ -17,7 +17,7 @@ public class BackendLogin {
         this.password = password;
     }
 
-    public static void dbconnectmethod() {
+    public static boolean dbconnectmethod() {
         String url = "jdbc:mysql://localhost:3306/ticket?zeroDateTimeBehavior=CONVERT_TO_NULL";
         String username = "root";
         String pass = "";
@@ -25,40 +25,56 @@ public class BackendLogin {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection(url, username, pass);
-            JOptionPane.showMessageDialog(null, "Online");
             String passwordString = new String(password);
 
             if (email.contains("@students")) {
-                String query = "SELECT * FROM studentlogin WHERE NU_Email = ? AND NU_Password = ?";
+                String query = "SELECT * FROM studentlogin WHERE NU_Email = ?";
                 PreparedStatement statement = connection.prepareStatement(query);
                 statement.setString(1, email);
-                statement.setString(2, new String(password));
                 ResultSet resultSet = statement.executeQuery();
 
                 if (resultSet.next()) {
-                    JOptionPane.showMessageDialog(null, "Welcome Student");
-
-                    String studentId = resultSet.getString("NU_ID");
-                    new StudentDashboard(studentId).setVisible(true);
+                    if (resultSet.getString("NU_Password").equals(passwordString)) {
+                        JOptionPane.showMessageDialog(null, "Welcome Student");
+                        new StudentDashboard(email).setVisible(true);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Invalid Password");
+                    }
                 } else {
-                    JOptionPane.showMessageDialog(null, "Invalid Email or Password/ No Account Found");
+                    query = "INSERT INTO studentlogin (NU_Email, NU_Password) VALUES (?, ?)";
+                    statement = connection.prepareStatement(query);
+                    statement.setString(1, email);
+                    statement.setString(2, passwordString);
+                    statement.executeUpdate();
+                    JOptionPane.showMessageDialog(null, "Welcome New Student");
+                    new StudentDashboard(email).setVisible(true);
+                    return true;
                 }
-            } else if (passwordString.contains("admin")) {
-                String query = "SELECT * FROM adminlogin WHERE admin_email = ? AND admin_password = ?";
+            } else if (email.contains("@admin")) {
+                String query = "SELECT * FROM adminlogin WHERE admin_email = ?";
                 PreparedStatement statement = connection.prepareStatement(query);
                 statement.setString(1, email);
-                statement.setString(2, new String(password));
                 ResultSet resultSet = statement.executeQuery();
 
                 if (resultSet.next()) {
-                    JOptionPane.showMessageDialog(null, "Welcome Admin");
-
-                    // open ADMIN DASHBOARD FRAME 
+                    if (resultSet.getString("admin_password").equals(passwordString)) {
+                        JOptionPane.showMessageDialog(null, "Welcome Admin");
+                        new AdminDashboard().setVisible(true);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Invalid Password");
+                    }
                 } else {
-                    JOptionPane.showMessageDialog(null, "Invalid Email or Password");
+                    query = "INSERT INTO adminlogin (admin_email, admin_password) VALUES (?, ?)";
+                    statement = connection.prepareStatement(query);
+                    statement.setString(1, email);
+                    statement.setString(2, passwordString);
+                    statement.executeUpdate();
+                    JOptionPane.showMessageDialog(null, "Welcome New Admin");
+                    new AdminDashboard().setVisible(true);
+                    return true;
                 }
             } else {
-                JOptionPane.showMessageDialog(null, "No Account Found");
+                JOptionPane.showMessageDialog(null, "Invalid Email");
             }
 
             connection.close();
@@ -66,6 +82,8 @@ public class BackendLogin {
         } catch (ClassNotFoundException | SQLException e) {
             JOptionPane.showMessageDialog(null, "Failed to connect to database");
         }
+
+        return false;
     }
 
 }

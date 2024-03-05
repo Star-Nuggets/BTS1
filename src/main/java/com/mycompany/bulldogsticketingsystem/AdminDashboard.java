@@ -25,6 +25,7 @@ public class AdminDashboard extends javax.swing.JFrame {
 
     public static final int SUPPORTING_DOCUMENT_INDEX = 11;
     public static final int PROOF_OF_PAYMENT_INDEX = 12;
+    public static final int COMMENT_INDEX = 15;
     public static final int TICKET_STATUS_INDEX = 17;
     public static final int TICKET_ID_INDEX = 0;
 
@@ -44,6 +45,7 @@ public class AdminDashboard extends javax.swing.JFrame {
         refreshTable();
     }
 
+
     private TableModelListener ticketStatusChangedListener(DefaultTableModel model) {
         return e -> {
             if (e.getType() == TableModelEvent.UPDATE) {
@@ -51,11 +53,11 @@ public class AdminDashboard extends javax.swing.JFrame {
                 int column = e.getColumn();
                 if (column == TICKET_STATUS_INDEX) { // Assuming the Status is in the 17th column (index 16)
                     String newStatus = (String) model.getValueAt(row, column);
-                    if (newStatus.equals("Completed") || newStatus.equals("Rejected")) {
+                    if (newStatus.equals("Completed") || newStatus.equals("Rejected") || newStatus.equals("Pending")) {
                         int ticketId = (int) model.getValueAt(row, 0); // Assuming the Ticket Id is in the first column
                         updateTicketStatusTo(ticketId, newStatus);
                     } else {
-                        JOptionPane.showMessageDialog(null, "Invalid status. Please enter either 'Completed' or 'Rejected'.");
+                        JOptionPane.showMessageDialog(null, "Invalid status. Please enter either 'Completed', 'Rejected' or 'Pending'.");
                         // Reset the status to its previous value
                         try {
                             String oldStatus = resultSet.getString("ticket_Status");
@@ -64,6 +66,10 @@ public class AdminDashboard extends javax.swing.JFrame {
                             ex.printStackTrace();
                         }
                     }
+                } else if (column == COMMENT_INDEX) { // Assuming the Comment is in the 15th column (index 14)
+                    String newComment = (String) model.getValueAt(row, column);
+                    int ticketId = (int) model.getValueAt(row, 0); // Assuming the Ticket Id is in the first column
+                    updateTicketCommentTo(ticketId, newComment);
                 }
             }
         };
@@ -348,8 +354,8 @@ public class AdminDashboard extends javax.swing.JFrame {
                 "Ticket Id", "Student Number", "First Name", "Middle Name", "Last Name", "Email", "Document Type", "No. of Copies", "Purpose", "Special Instruction", "Type of Payment", "Supporting Document", "Proof of Payment", "Date of Payment", "Total Amount Paid", "Comment", "Date", "Status"
             }
         ) {
-            final boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, true, true
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -803,6 +809,29 @@ public class AdminDashboard extends javax.swing.JFrame {
             updateTicketStatusTo(ticketId, newStatus);
         } else {
             JOptionPane.showMessageDialog(null, "No row selected");
+        }
+    }
+
+    private void updateTicketCommentTo(int ticketId, String comment) {
+        String url = "jdbc:mysql://localhost:3306/ticket?zeroDateTimeBehavior=CONVERT_TO_NULL";
+        String username = "root";
+        String pass = "";
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(url, username, pass);
+
+            String query = "UPDATE ticketable SET comments = ? WHERE ticket_friendlyId = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, comment);
+            preparedStatement.setInt(2, ticketId);
+            preparedStatement.executeUpdate();
+
+            refreshTable();
+
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Failed to connect to database");
         }
     }
 

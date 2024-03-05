@@ -27,6 +27,46 @@ public class StudentDashboard extends javax.swing.JFrame {
     public StudentDashboard(String currentUser) {
         this.currentUser = currentUser; // Initialize the currentUser field in the constructor
         initComponents();
+
+        String url = "jdbc:mysql://localhost:3306/ticket?zeroDateTimeBehavior=CONVERT_TO_NULL";
+        String username = "root";
+        String pass = "";
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(url, username, pass);
+
+            String query = "SELECT * FROM studentlogin WHERE NU_Email = ?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, currentUser);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                String firstName = resultSet.getString("first_name");
+                String middleName = resultSet.getString("middle_name");
+                String lastName = resultSet.getString("last_name");
+                String studentNumber = resultSet.getString("NU_ID");
+
+                if (firstName != null && !firstName.isEmpty() && lastName != null && !lastName.isEmpty()) {
+                    WelcomeUser.setText("Welcome, " + firstName + " " + lastName + "!");
+                } else {
+                    WelcomeUser.setText("Welcome!");
+                }
+
+                jTextField1.setText(firstName);
+                jTextField3.setText(middleName);
+                jTextField4.setText(lastName);
+                jTextField5.setText(studentNumber);
+                jTextField6.setText(currentUser);
+            } else {
+                WelcomeUser.setText("Welcome!");
+            }
+
+            connection.close();
+
+        } catch (ClassNotFoundException | SQLException e) {
+            JOptionPane.showMessageDialog(null, "Failed to connect to database");
+        }
     }
 
     /**
@@ -126,7 +166,7 @@ public class StudentDashboard extends javax.swing.JFrame {
 
         WelcomeUser.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         WelcomeUser.setForeground(new java.awt.Color(12, 40, 105));
-        WelcomeUser.setText("Welcome, (User)");
+        WelcomeUser.setText("Welcome!");
         jPanel1.add(WelcomeUser, new org.netbeans.lib.awtextra.AbsoluteConstraints(770, 50, 200, 50));
 
         SubmitATicket.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
@@ -215,7 +255,7 @@ public class StudentDashboard extends javax.swing.JFrame {
                 jButton1ActionPerformed(evt);
             }
         });
-        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 800, 220, -1));
+        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 800, 260, -1));
 
         jButton5.setText("Attach a File");
         jButton5.addActionListener(new java.awt.event.ActionListener() {
@@ -223,7 +263,7 @@ public class StudentDashboard extends javax.swing.JFrame {
                 jButton5ActionPerformed(evt);
             }
         });
-        jPanel1.add(jButton5, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 760, 220, -1));
+        jPanel1.add(jButton5, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 760, 260, -1));
 
         jButton4.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jButton4.setForeground(new java.awt.Color(153, 0, 0));
@@ -233,7 +273,7 @@ public class StudentDashboard extends javax.swing.JFrame {
                 jButton4ActionPerformed(evt);
             }
         });
-        jPanel1.add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 870, 140, 50));
+        jPanel1.add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 870, 140, 50));
 
         jButton2.setBackground(new java.awt.Color(50, 62, 143));
         jButton2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -261,31 +301,31 @@ public class StudentDashboard extends javax.swing.JFrame {
                 jTextField8ActionPerformed(evt);
             }
         });
-        jPanel1.add(jTextField8, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 720, 220, 30));
+        jPanel1.add(jTextField8, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 720, 260, 30));
 
         jTextField1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextField1ActionPerformed(evt);
             }
         });
-        jPanel1.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 160, 220, 30));
+        jPanel1.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 160, 260, 30));
 
         jTextField2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextField2ActionPerformed(evt);
             }
         });
-        jPanel1.add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 420, 220, 30));
-        jPanel1.add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 200, 220, 30));
-        jPanel1.add(jTextField4, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 240, 220, 30));
-        jPanel1.add(jTextField5, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 280, 220, 30));
+        jPanel1.add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 420, 260, 30));
+        jPanel1.add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 200, 260, 30));
+        jPanel1.add(jTextField4, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 240, 260, 30));
+        jPanel1.add(jTextField5, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 280, 260, 30));
 
         jTextField6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextField6ActionPerformed(evt);
             }
         });
-        jPanel1.add(jTextField6, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 320, 220, 30));
+        jPanel1.add(jTextField6, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 320, 260, 30));
 
         jTextField7.setHorizontalAlignment(javax.swing.JTextField.LEFT);
         jTextField7.addActionListener(new java.awt.event.ActionListener() {
@@ -293,35 +333,35 @@ public class StudentDashboard extends javax.swing.JFrame {
                 jTextField7ActionPerformed(evt);
             }
         });
-        jPanel1.add(jTextField7, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 580, 360, 100));
+        jPanel1.add(jTextField7, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 580, 400, 100));
 
-        Type_of_Documents.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select your type of document", "Assigned Flowchart/Curriculum", "Certificate of Attendance", "Certificate of Course Description", "Certificate of English Medium", "Certificate of Enrollment", "Certificate of GWA", "Certificate of Registration", "CTC of Grades", "Honorable Dismissal/Transfer Credentials", "Student Flowchart", "Transcript of Records" }));
+        Type_of_Documents.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{"Select your type of document", "Assigned Flowchart/Curriculum - 54.00", "Certificate of Attendance - 157.00", "Certificate of Course Description - 157.00", "Certificate of English Medium - 157.00", "Certificate of Enrollment - 157.00", "Certificate of GWA - 157.00", "Certificate of Registration - 54.00", "CTC of Grades - 54.00", "Honorable Dismissal/Transfer Credentials - 1,060.00", "Student Flowchart - 54.00", "Transcript of Records - 1,030.00"}));
         Type_of_Documents.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 Type_of_DocumentsActionPerformed(evt);
             }
         });
-        jPanel1.add(Type_of_Documents, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 380, 220, -1));
+        jPanel1.add(Type_of_Documents, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 380, 260, -1));
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select your Purpose", "Employment", "Scholarship/Educational Assistance", "Other" }));
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{"Select your Purpose", "Employment", "Scholarship/Educational Assistance", "Other"}));
         jComboBox1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBox1ActionPerformed(evt);
             }
         });
-        jPanel1.add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 480, 220, -1));
+        jPanel1.add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 480, 260, -1));
 
-        Payment_Method.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Choose Payment Method", "Gcash", "Bank Transfer" }));
-        jPanel1.add(Payment_Method, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 690, 220, -1));
+        Payment_Method.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{"Choose Payment Method", "Gcash", "Bank Transfer"}));
+        jPanel1.add(Payment_Method, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 690, 260, -1));
 
         SecondBgStudentDashboard.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/BgStudentDashboard.png"))); // NOI18N
         jPanel1.add(SecondBgStudentDashboard, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 930, 950));
 
         jScrollPane2.setViewportView(jPanel1);
 
-        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(-30, 30, 990, 1190));
+        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(-30, 30, 990, 780));
 
-        setSize(new java.awt.Dimension(969, 1368));
+        setSize(new java.awt.Dimension(969, 820));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -440,6 +480,20 @@ public class StudentDashboard extends javax.swing.JFrame {
                 preparedStatement.setInt(2, id);
                 preparedStatement.executeUpdate();
             }
+
+            // Update the user's name and student number based on their input
+            query = "UPDATE studentlogin SET first_Name = ?, middle_name = ?, last_Name = ?, NU_ID = ? WHERE NU_Email = ?";
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, firstName);
+            preparedStatement.setString(2, middleName);
+            preparedStatement.setString(3, lastName);
+            preparedStatement.setString(4, studentNumber);
+            preparedStatement.setString(5, currentUser);
+            preparedStatement.executeUpdate();
+
+            JOptionPane.showMessageDialog(null, "Ticket submitted successfully");
+            new ViewStudentTickets(currentUser).setVisible(true);
+            this.dispose();
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Failed to connect to database");
@@ -447,7 +501,8 @@ public class StudentDashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        // TODO add your handling code here:
+        new Login().setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jTextField8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField8ActionPerformed

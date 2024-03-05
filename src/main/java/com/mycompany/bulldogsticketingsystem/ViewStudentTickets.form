@@ -138,7 +138,7 @@
                 </Property>
               </Properties>
               <Events>
-                <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="jPanel4KeyPressed"/>
+                <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jPanel4MousePressed"/>
               </Events>
 
               <Layout>
@@ -320,11 +320,11 @@
                       <Properties>
                         <Property name="autoCreateRowSorter" type="boolean" value="true"/>
                         <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                          <Table columnCount="17" rowCount="0">
+                          <Table columnCount="18" rowCount="0">
                             <Column editable="false" title="Ticket Id" type="java.lang.Object"/>
                             <Column editable="false" title="Student Number" type="java.lang.Object"/>
                             <Column editable="false" title="First Name" type="java.lang.Object"/>
-                            <Column editable="false" title="MIddle Name" type="java.lang.Object"/>
+                            <Column editable="false" title="Middle Name" type="java.lang.Object"/>
                             <Column editable="false" title="Last Name" type="java.lang.Object"/>
                             <Column editable="false" title="Email" type="java.lang.Object"/>
                             <Column editable="false" title="Document Type" type="java.lang.Object"/>
@@ -334,14 +334,20 @@
                             <Column editable="false" title="Type of Payment" type="java.lang.Object"/>
                             <Column editable="false" title="Supporting Document" type="java.lang.Object"/>
                             <Column editable="false" title="Proof of Payment" type="java.lang.Object"/>
+                            <Column editable="false" title="Date of Payment" type="java.lang.Object"/>
                             <Column editable="false" title="Total Amount Paid" type="java.lang.Object"/>
-                            <Column editable="true" title="Comment" type="java.lang.Object"/>
+                            <Column editable="false" title="Comment" type="java.lang.Object"/>
                             <Column editable="false" title="Date" type="java.lang.Object"/>
                             <Column editable="false" title="Status" type="java.lang.Object"/>
                           </Table>
                         </Property>
                         <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
                           <TableColumnModel selectionModel="0">
+                            <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                              <Title/>
+                              <Editor/>
+                              <Renderer/>
+                            </Column>
                             <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
                               <Title/>
                               <Editor/>

@@ -220,8 +220,8 @@ public class Login extends javax.swing.JFrame {
 
     private void LOGINBTNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LOGINBTNActionPerformed
         new BackendLogin(txtNUemail.getText(), txtPassword.getPassword());
-        BackendLogin.dbconnectmethod();
-        this.dispose();
+        if(BackendLogin.dbconnectmethod())
+            this.dispose();
     }//GEN-LAST:event_LOGINBTNActionPerformed
 
     private void txtNUemailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNUemailActionPerformed
