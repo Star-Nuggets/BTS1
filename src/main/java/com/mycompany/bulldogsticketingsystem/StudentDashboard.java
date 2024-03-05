@@ -390,14 +390,15 @@ public class StudentDashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField7ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        attachFile(jButton1, supportingDocumentContent);
+        supportingDocumentContent = attachFile(jButton1);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jComboBox1ActionPerformed
 
-    private void attachFile(JButton button, byte[] fileContent) {
+    private byte[] attachFile(JButton button) {
+        byte[] fileContent = null;
         JFileChooser fileChooser = new JFileChooser();
         int returnValue = fileChooser.showOpenDialog(null);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
@@ -413,8 +414,8 @@ public class StudentDashboard extends javax.swing.JFrame {
                 e.printStackTrace();
             }
         }
+        return fileContent;
     }
-
     private String getInput(JTextField field) {
         return field.getText();
     }
@@ -510,7 +511,7 @@ public class StudentDashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField8ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        attachFile(jButton5, supportingDocumentContent);
+        proofOfPaymentContent = attachFile(jButton5);
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
